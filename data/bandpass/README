@@ -2,3 +2,8 @@ These throughput curves are taken from the LSST throughputs repository
 (commit 3df0d76b78).  They are NOT meant to reflect the current official
 LSST throughputs.  They are provided only or the purposes of having standardized
 test bandpasses.
+
+Added convert_to_ang.py file to multiply wavelength column by 10 to convert from nm to A.
+Also added throughput curve files with .ang appended to indicate wavelengths are in angstroms.
+
+lsst.filters is just a list of the LSST bandpass files for use in PhotoZDC1 code.
