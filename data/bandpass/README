@@ -1,0 +1,4 @@
+These throughput curves are taken from the LSST throughputs repository
+(commit 3df0d76b78).  They are NOT meant to reflect the current official
+LSST throughputs.  They are provided only or the purposes of having standardized
+test bandpasses.
