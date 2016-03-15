@@ -40,7 +40,8 @@ def run_lsst_baker(redshift_grid):
         bandpass_list.append(bp)
 
     sed_dir = os.path.join('..', 'data', 'sed')
-    list_of_sed_names = [nn for nn in os.listdir(sed_dir) if 'spec' in nn and 'ang' not in nn]
+    list_of_sed_names = sorted([nn for nn in os.listdir(sed_dir)
+                                if 'spec' in nn and 'ang' not in nn])
 
     n_rows = len(list_of_sed_names)*len(redshift_grid)
     dtype = np.dtype([('sedname', str, 300), ('redshift', np.float),
@@ -51,10 +52,11 @@ def run_lsst_baker(redshift_grid):
     output_array = np.array([dummy]*n_rows, dtype=dtype)
 
     i_row = 0
-    for sed_name in list_of_sed_names:
-        for redshift in redshift_grid:
+    for redshift in redshift_grid:
+        for sed_name in list_of_sed_names:
             ss = Sed()
-            t_start = time.clock()
+#            t_start = time.clock()
+            t_start = time.time()
             ss.readSED_flambda(os.path.join(sed_dir, sed_name))
             ss.redshiftSED(redshift)
             local_list = []
@@ -62,7 +64,8 @@ def run_lsst_baker(redshift_grid):
                 mm = ss.calcMag(bp)
                 local_list.append(mm)
             #print local_list[0], local_list[1], local_list[0]-local_list[1]
-            time_spent = time.clock()-t_start
+#            time_spent = time.clock()-t_start
+            time_spent = time.time()-t_start
             output_array[i_row][0] = sed_name
             output_array[i_row][1] = redshift
             output_array[i_row][2] = local_list[0]-local_list[1]
@@ -82,11 +85,9 @@ if __name__ == "__main__":
     redshift_grid = np.arange(0, 2.1, 0.2)
     recarr = run_lsst_baker(redshift_grid)
     with open('lsst_bakeoff_output.txt', 'w') as output_file:
-        for ug, gr, ri, iz, zy, name, redshift in \
+        for ug, gr, ri, iz, zy, name, redshift, time in \
         zip(recarr['ug'], recarr['gr'], recarr['ri'],
             recarr['iz'], recarr['zy'], recarr['sedname'],
-            recarr['redshift']):
-
-
-            output_file.write('%e %e %e %e %e %s %e\n' %
-                              (ug, gr, ri, iz, zy, name, redshift))
+            recarr['redshift'], recarr['time']):
+            output_file.write('%e %e %e %e %e %s %e %e\n' %
+                              (ug, gr, ri, iz, zy, name, redshift, time))
