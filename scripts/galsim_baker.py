@@ -43,13 +43,12 @@ class GalSimPhotometry(object):
         sed_fn = os.path.join(self.sed_dir, sed_name)
         sed = galsim.SED(sed_fn).atRedshift(redshift)
         tstart = time.time()
-        my_fluxes = []
+        my_mags = []
         for band, bp in self.bandpasses.items():
             flux = sed.calculateFlux(bp)
-            my_fluxes.append(flux)
+            my_mags.append(-2.5*np.log10(flux) + bp.zeropoint)
         time_spent = time.time() - tstart
-        row = [-2.5*np.log10(flux0/flux1) for flux0, flux1
-                in zip(my_fluxes[:-1], my_fluxes[1:])]
+        row = [mag0 - mag1 for mag0, mag1 in zip(my_mags[:-1], my_mags[1:])]
         row.extend([sed_name, redshift, time_spent])
         return tuple(row)
 
