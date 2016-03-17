@@ -22,12 +22,14 @@ subplots = [231, 232, 233, 234, 235]
 for color, subplot in zip(names[:5], subplots):
     axes = fig.add_subplot(subplot)
     handles = []
-    handles.append(plt.scatter(lsst[color], photozdc1[color], label='PhotoZDC1'))
-    handles.append(plt.scatter(lsst[color], galsim[color], alpha=0.3, color='green',
+    handles.append(plt.scatter(lsst[color], photozdc1[color]-lsst[color],
+                               label='PhotoZDC1'))
+    handles.append(plt.scatter(lsst[color], galsim[color]-lsst[color],
+                               alpha=0.3, color='green',
                                marker='o', label='GalSim'))
     plt.legend(handles=handles, scatterpoints=1, loc=2)
     plt.xlabel('sims_photUtils')
-    plt.ylabel('PhotoZDC1, GalSim')
+    plt.ylabel('[PhotoZDC1,GalSim] - sims_photUtils')
     axes.set_title(color)
 
 # Plot histograms of photozdc1[color]-lsst[color] and galsim[color]-lsst[color].
