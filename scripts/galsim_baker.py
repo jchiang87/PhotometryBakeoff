@@ -26,7 +26,7 @@ class GalSimPhotometry(object):
         bp_dir = os.path.join(photometry_baker_dir, 'data', 'bandpass')
         self.bandpasses = OrderedDict()
         for band in 'ugrizy':
-            bp = galsim.Bandpass(os.path.join(bp_dir, 'total_%s.dat' % band))
+            bp = galsim.Bandpass(os.path.join(bp_dir, 'total_%s.dat' % band)).thin()
             self.bandpasses[band] = bp.withZeropoint('AB', _effective_diameter,
                                                      _exptime)
 
