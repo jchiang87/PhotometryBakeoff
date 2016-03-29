@@ -12,9 +12,10 @@ except:
 import os
 import time
 import numpy as np
+from get_sed_names import get_sed_names
 
 
-def run_lsst_baker(redshift_grid):
+def run_lsst_baker(redshift_grid, sed_list=None):
     """
     Accepts a redshift grid (a numpy array).  Reads in all of the SEDs from
     ../data/sed/ and the calculates their colors in all of the lsst bands,
@@ -40,8 +41,11 @@ def run_lsst_baker(redshift_grid):
         bandpass_list.append(bp)
 
     sed_dir = os.path.join('..', 'data', 'sed')
-    list_of_sed_names = sorted([nn for nn in os.listdir(sed_dir)
-                                if 'spec' in nn and 'ang' not in nn])
+    if sed_list is None:
+        list_of_sed_names = sorted([nn for nn in os.listdir(sed_dir)
+                                    if 'spec' in nn and 'ang' not in nn])
+    else:
+        list_of_sed_names = get_sed_names(os.path.join(sed_dir, sed_list))
 
     n_rows = len(list_of_sed_names)*len(redshift_grid)
     dtype = np.dtype([('sedname', str, 300), ('redshift', np.float),
@@ -80,11 +84,16 @@ def run_lsst_baker(redshift_grid):
 
 
 if __name__ == "__main__":
+#    sed_list = None
+#    outfile = 'lsst_bakeoff_output.txt'
+    sed_list = 'lsst_2.seds'
+    outfile = 'lsst_bakeoff_output_2.txt'
+
     print "\n\nNOTE: running this script will produce a text file:"
-    print "lsst_bakeoff_output.txt\n\n"
+    print "%s\n\n" % outfile
     redshift_grid = np.arange(0, 2.1, 0.2)
-    recarr = run_lsst_baker(redshift_grid)
-    with open('lsst_bakeoff_output.txt', 'w') as output_file:
+    recarr = run_lsst_baker(redshift_grid, sed_list=sed_list)
+    with open(outfile, 'w') as output_file:
         for ug, gr, ri, iz, zy, name, redshift, time in \
         zip(recarr['ug'], recarr['gr'], recarr['ri'],
             recarr['iz'], recarr['zy'], recarr['sedname'],

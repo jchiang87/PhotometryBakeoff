@@ -14,9 +14,8 @@ import time
 import sedFilter
 import photometry as phot
 
-def bake(zgrid):
+def bake(zgrid, listOfSedsFile='lsst.seds'):
     # get SED list
-    listOfSedsFile = "lsst.seds"
     sedLib = sedFilter.createSedDict(listOfSedsFile, "../data/sed/")
     sedList = sorted(sedLib.keys())
     nSED = len(sedLib)
@@ -65,13 +64,17 @@ def bake(zgrid):
     return records
 
 if __name__ == '__main__':
+#    listOfSedsFile = 'lsst.seds'
+#    outfile = 'photozdc1_bakeoff_output.txt'
+    listOfSedsFile = 'lsst_2.seds'
+    outfile = 'photozdc1_bakeoff_output_2.txt'
+
     zgrid = np.arange(0, 2.1, 0.2)
-    records = bake(zgrid)
-    with open('photozdc1_bakeoff_output.txt', 'w') as output:
+    records = bake(zgrid, listOfSedsFile=listOfSedsFile)
+    with open(outfile, 'w') as output:
         for ug, gr, ri, iz, zy, name, redshift, time in \
             zip(records['ug'], records['gr'], records['ri'], records['iz'],
                 records['iz'], records['sedname'], records['redshift'],
                 records['time']):
             output.write('%e %e %e %e %e %s %e %e\n' %
                          (ug, gr, ri, iz, zy, name, redshift, time))
-

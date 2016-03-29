@@ -7,6 +7,7 @@ from collections import OrderedDict
 import time
 import numpy as np
 import galsim
+from get_sed_names import get_sed_names
 
 # Numbers for LSST.
 _effective_diameter = 667. # cm
@@ -17,7 +18,7 @@ class GalSimPhotometry(object):
     Class to compute colors for LSST bands using the GalSim
     chromaticity tools.
     """
-    def __init__(self, photometry_baker_dir='..'):
+    def __init__(self, photometry_baker_dir='..', sed_list=None):
         """
         Read in the throughput data and SED filenames from the package
         data subfolder.
@@ -32,8 +33,12 @@ class GalSimPhotometry(object):
 
         # Read the SED filenames.
         self.sed_dir = os.path.join(photometry_baker_dir, 'data', 'sed')
-        self.sed_names = sorted([x for x in os.listdir(self.sed_dir)
-                                 if 'spec' in x and 'ang' not in x])
+        if sed_list is None:
+            self.sed_names = sorted([x for x in os.listdir(self.sed_dir)
+                                     if 'spec' in x and 'ang' not in x])
+        else:
+            # Read from the file with list of names instead.
+            self.sed_names = get_sed_names(os.path.join(sed_dir, sed_list))
 
     def colors(self, sed_name, redshift):
         """
@@ -55,9 +60,9 @@ class GalSimPhotometry(object):
         return tuple(row)
 
 if __name__ == '__main__':
-    phot_tool = GalSimPhotometry()
+    phot_tool = GalSimPhotometry(sed_list='lsst_2.seds')
     redshift_grid = np.arange(0, 2.1, 0.2)
-    with open('galsim_bakeoff_output.txt', 'w') as output:
+    with open('galsim_bakeoff_output_2.txt', 'w') as output:
         for redshift in redshift_grid:
             for sed_name in phot_tool.sed_names:
                 output.write('%e %e %e %e %e %s %e %e\n' %
